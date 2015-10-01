@@ -48,7 +48,8 @@ public class Main {
 		                        .build());
 		 JestHttpClient client = (JestHttpClient) factory.getObject();
 		 SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Tabula Rasa"));
+//		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Tabula Rasa"));
+		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Mjolner"));
 		 searchSourceBuilder.size(1);
 
 		 System.out.println(searchSourceBuilder.toString());
@@ -59,12 +60,13 @@ public class Main {
 		 
 		 SearchResult result = client.execute(search);
 		 
-//		 System.out.println(result.getPathToResult());
-//		 System.out.println(result.getJsonString());
+		 System.out.println(result.getPathToResult());
+		 System.out.println(result.getJsonString());
 		 
 		 List<Hit<ExileToolsHit, Void>> articles = result.getHits(ExileToolsHit.class);
-		 
+		 System.out.println(articles);
 		 articles.stream().forEach( (e) -> {
+			 System.out.println(e.source.getMd5sum());
 			 System.out.println(e.source.getInfo());
 			 System.out.println(e.source.getAttributes());
 			 System.out.println(e.source.getShop());
