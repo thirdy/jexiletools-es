@@ -1,4 +1,4 @@
-package net.thirdy.jexiletools.es.model;
+package io.jexiletools.es.model;
 
 import java.util.List;
 

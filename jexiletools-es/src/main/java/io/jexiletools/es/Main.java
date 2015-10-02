@@ -15,19 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package net.thirdy.jexiletools.es;
+package io.jexiletools.es;
 
 import java.util.List;
 
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
+import io.jexiletools.es.model.ExileToolsHit;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.SearchResult.Hit;
-import net.thirdy.jexiletools.es.model.ExileToolsHit;
 /**
  * @author thirdy
  *
@@ -47,6 +47,7 @@ public class Main {
 		                        .multiThreaded(true)
 		                        .build());
 		 JestHttpClient client = (JestHttpClient) factory.getObject();
+		 
 		 SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 //		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Tabula Rasa"));
 		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Mjolner"));

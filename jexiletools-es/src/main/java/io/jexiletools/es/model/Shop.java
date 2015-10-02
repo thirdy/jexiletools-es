@@ -1,4 +1,4 @@
-package net.thirdy.jexiletools.es.model;
+package io.jexiletools.es.model;
 
 public class Shop {
 	  Long	added;

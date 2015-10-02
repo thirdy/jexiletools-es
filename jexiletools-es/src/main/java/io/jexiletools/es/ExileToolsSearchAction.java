@@ -1,4 +1,4 @@
-package net.thirdy.jexiletools.es;
+package io.jexiletools.es;
 
 import java.io.StringReader;
 import java.util.ArrayList;
