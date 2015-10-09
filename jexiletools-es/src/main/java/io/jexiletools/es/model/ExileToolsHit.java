@@ -9,10 +9,32 @@ public class ExileToolsHit {
 	Shop shop;
 	Attributes attributes;
 	Sockets sockets;
+	
 	@Override
 	public String toString() {
-		return "HitBody [md5sum=" + md5sum + ", uuid=" + uuid + ", info=" + info + ", shop=" + shop
-				+ ", attributes=" + attributes + ", sockets=" + sockets + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("ExileToolsHit [");
+		builder.append(System.lineSeparator());
+		builder.append("md5sum=");
+		builder.append(md5sum);
+		builder.append(System.lineSeparator());
+		builder.append("uuid=");
+		builder.append(uuid);
+		builder.append(System.lineSeparator());
+		builder.append("info=");
+		builder.append(info);
+		builder.append(System.lineSeparator());
+		builder.append("shop=");
+		builder.append(shop);
+		builder.append(System.lineSeparator());
+		builder.append("attributes=");
+		builder.append(attributes);
+		builder.append(System.lineSeparator());
+		builder.append("sockets=");
+		builder.append(sockets);
+		builder.append(System.lineSeparator());
+		builder.append("]");
+		return builder.toString();
 	}
 	public String getMd5sum() {
 		return md5sum;

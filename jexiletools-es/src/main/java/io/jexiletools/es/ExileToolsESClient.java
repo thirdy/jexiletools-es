@@ -55,10 +55,11 @@ public class ExileToolsESClient {
 		JestClientFactory factory = new JestClientFactory();
 		factory.setHttpClientConfig(new HttpClientConfig.Builder(url).multiThreaded(true).build());
 		client = (JestHttpClient) factory.getObject();
+		logger.debug("~~~~~~~~~~~~~~~~~~ Successfully started ExileToolsESClient ~~~~~~~~~~~~~~~~~~~~");
 	}
 	
 	public SearchResult execute(String json) throws IOException {
-		 logger.debug("Executing search: {}{}", System.lineSeparator(), json);
+		 logger.debug("~~~~ Executing search: {}{}", System.lineSeparator(), json);
 
 		 ExileToolsSearchAction search = new ExileToolsSearchAction.Builder(json)
 		                                 .setHeader("Authorization", apiKey)

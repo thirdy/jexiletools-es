@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -43,18 +44,10 @@ public class ExileToolsESClientTest {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
 	static ExileToolsESClient client;
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		client = new ExileToolsESClient();
 	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		client.shutdown();
@@ -68,30 +61,52 @@ public class ExileToolsESClientTest {
 		
 		SearchResult result = client.execute(searchSourceBuilder.toString());
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
-		 hits.stream().forEach( (e) -> {
-			 logger.debug("{}", e.source.getMd5sum());
-			 logger.debug("{}", e.source.getInfo());
-			 logger.debug("{}", e.source.getAttributes());
-			 logger.debug("{}", e.source.getShop());
-			 logger.debug("{}", e.source.getSockets());
-		 } );
+		for (Hit<ExileToolsHit, Void> hit : hits) {
+			logger.info(hit.source.toString());
+		}
 	}
 	
 	@Test
 	public void testExecuteTabula() throws Exception {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Tabula Rasa"));
+		searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Tabula Rasa"));
 		searchSourceBuilder.size(1);
 		
 		SearchResult result = client.execute(searchSourceBuilder.toString());
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
-		hits.stream().forEach( (e) -> {
-			logger.debug("{}", e.source.getMd5sum());
-			logger.debug("{}", e.source.getInfo());
-			logger.debug("{}", e.source.getAttributes());
-			logger.debug("{}", e.source.getShop());
-			logger.debug("{}", e.source.getSockets());
-		} );
+		for (Hit<ExileToolsHit, Void> hit : hits) {
+			logger.info(hit.source.toString());
+		}
+	}
+	
+	@Test
+	public void testShops() throws Exception {
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.query(QueryBuilders.boolQuery()
+				.must(QueryBuilders.matchQuery("attributes.league", "Flashback Event (IC001)"))
+				.mustNot(QueryBuilders.matchQuery("attributes.league", "Flashback Event (IC001)")));
+		searchSourceBuilder.size(1);
+		
+		SearchResult result = client.execute(searchSourceBuilder.toString());
+		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
+		for (Hit<ExileToolsHit, Void> hit : hits) {
+			logger.info(hit.source.toString());
+		}
+	}
+	
+	@Test
+	public void testGetLeagues() throws Exception {
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.aggregation(AggregationBuilders
+				.terms("leagues")
+				.field("attributes.league"));
+//		searchSourceBuilder.size(0);
+		
+		SearchResult result = client.execute(searchSourceBuilder.toString());
+		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
+		for (Hit<ExileToolsHit, Void> hit : hits) {
+			logger.info(hit.source.toString());
+		}
 	}
 
 }
