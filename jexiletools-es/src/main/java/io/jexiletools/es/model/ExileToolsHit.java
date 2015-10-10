@@ -1,5 +1,6 @@
 package io.jexiletools.es.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -129,16 +130,18 @@ public class ExileToolsHit {
 
 	@SuppressWarnings("unchecked")
 	public List<Mod> getExplicitMods() {
-		List<Mod> result = Collections.emptyList();
+		List<Mod> result = new ArrayList<>();
 		Map<String, Object> _mods = getMods();
-		if (!_mods.isEmpty()) {
+		if (_mods != null && !_mods.isEmpty()) {
 			Map<String, Object> itemTypeMods = (Map<String, Object>) _mods.get(getAttributes().getItemType());
 			Map<String, Object> explicitMods = (Map<String, Object>) itemTypeMods.get("explicit");
-			result = explicitMods
-				.entrySet()
-				.stream()
-				.map(e -> Mod.fromRaw(e.getKey(), e.getValue()))
-				.collect(Collectors.toList());
+			if (explicitMods != null) {
+				result = explicitMods
+						.entrySet()
+						.stream()
+						.map(e -> Mod.fromRaw(e.getKey(), e.getValue()))
+						.collect(Collectors.toList());
+			}
 		}
 		
 		return result;
@@ -148,14 +151,16 @@ public class ExileToolsHit {
 	public Optional<Mod> getImplicitMod() {
 		Optional<Mod> result = Optional.empty();
 		Map<String, Object> _mods = getMods();
-		if (!_mods.isEmpty()) {
+		if (_mods != null && !_mods.isEmpty()) {
 			Map<String, Object> itemTypeMods = (Map<String, Object>) _mods.get(getAttributes().getItemType());
 			Map<String, Object> implicitMods = (Map<String, Object>) itemTypeMods.get("implicit");
-			result = implicitMods
-					.entrySet()
-					.stream()
-					.map(e -> Mod.fromRaw(e.getKey(), e.getValue()))
-					.findFirst();
+			if (implicitMods != null) {
+				result = implicitMods
+						.entrySet()
+						.stream()
+						.map(e -> Mod.fromRaw(e.getKey(), e.getValue()))
+						.findFirst();
+			}
 		}
 		return result;
 	}

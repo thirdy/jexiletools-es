@@ -19,6 +19,8 @@ package io.jexiletools.es.model;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author thirdy
  *
@@ -28,16 +30,34 @@ public class Mod {
 	String name;
 	
 	boolean isValueRanged; // true for mods like Adds #-# Lightning Damage to Attacks
+	boolean isValueBoolean;
 	
 	Double value;
 	Range range;
+	
+	public String toDisplay() {
+		String result = name;
+		if (isValueRanged) {
+			String minStr = String.valueOf(range.getMin().intValue());
+			String maxStr = String.valueOf(range.getMax().intValue());
+			result = StringUtils.replaceOnce(result, "#", minStr);
+			result = StringUtils.replaceOnce(result, "#", maxStr);
+		} else if (isValueBoolean) {
+			// mod name is good enough
+		} else {
+			String valueStr = String.valueOf(value.intValue());
+			result = StringUtils.replaceOnce(result, "#", valueStr);
+		}
+		return result;
+	}
 	
 	public static Mod fromRaw(String name, Object value) {
 		Mod mod = new Mod();
 		mod.setName(name);
 		if (Double.class.isInstance(value)) {
-			mod.setValueRanged(false);
 			mod.setValue((Double)value);
+		} else if (Boolean.class.isInstance(value)) {
+			mod.setValueBoolean(true);
 		} else if (Map.class.isInstance(value)) {
 			mod.setValueRanged(true);
 			@SuppressWarnings("unchecked")
@@ -80,6 +100,14 @@ public class Mod {
 		this.range = range;
 	}
 
+	public boolean isValueBoolean() {
+		return isValueBoolean;
+	}
+
+	public void setValueBoolean(boolean isValueBoolean) {
+		this.isValueBoolean = isValueBoolean;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -87,6 +115,8 @@ public class Mod {
 		builder.append(name);
 		builder.append(", isValueRanged=");
 		builder.append(isValueRanged);
+		builder.append(", isValueBoolean=");
+		builder.append(isValueBoolean);
 		builder.append(", value=");
 		builder.append(value);
 		builder.append(", range=");
@@ -94,6 +124,8 @@ public class Mod {
 		builder.append("]");
 		return builder.toString();
 	}
+
+	
 	
 	
 }
