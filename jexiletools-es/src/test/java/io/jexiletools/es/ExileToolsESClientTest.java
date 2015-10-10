@@ -17,10 +17,11 @@
  */
 package io.jexiletools.es;
 
-import static org.junit.Assert.*;
-
+import java.util.LinkedList;
 import java.util.List;
 
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -30,7 +31,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.jexiletools.es.ExileToolsESClient;
 import io.jexiletools.es.model.ExileToolsHit;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.SearchResult.Hit;
@@ -51,6 +51,32 @@ public class ExileToolsESClientTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		client.shutdown();
+	}
+	
+	/**
+	 * As per ES documentation/tome, the best way to do our search is via Filters
+	 */
+	@Test
+	public void testExecuteMjolnerUsingFilters() throws Exception {
+
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		List<FilterBuilder> filters = new LinkedList<>();
+		
+		filters.add(FilterBuilders.termFilter("attributes.league", "Hardcore"));
+		filters.add(FilterBuilders.termFilter("info.name", "Mjolner"));
+		
+		FilterBuilder filter = FilterBuilders.andFilter(filters.toArray(new FilterBuilder[filters.size()]));
+		
+		
+		searchSourceBuilder.query(QueryBuilders.filteredQuery(null, filter));
+		searchSourceBuilder.size(10);
+		
+		
+		SearchResult result = client.execute(searchSourceBuilder.toString());
+		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
+		for (Hit<ExileToolsHit, Void> hit : hits) {
+			logger.info(hit.source.toString());
+		}
 	}
 
 	@Test
