@@ -18,21 +18,14 @@
 package io.jexiletools.es;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-import io.jexiletools.es.model.ExileToolsHit;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 import io.searchbox.core.SearchResult;
-import io.searchbox.core.SearchResult.Hit;
 
 /**
  * @author thirdy

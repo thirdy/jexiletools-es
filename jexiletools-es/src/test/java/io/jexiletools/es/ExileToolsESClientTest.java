@@ -63,19 +63,22 @@ public class ExileToolsESClientTest {
 		List<FilterBuilder> filters = new LinkedList<>();
 		
 		filters.add(FilterBuilders.termFilter("attributes.league", "Hardcore"));
-		filters.add(FilterBuilders.termFilter("info.name", "Mjolner"));
+//		filters.add(FilterBuilders.termFilter("info.name", "Mjolner"));
+		filters.add(FilterBuilders.termFilter("info.name", "Hegemony's Era"));
 		
 		FilterBuilder filter = FilterBuilders.andFilter(filters.toArray(new FilterBuilder[filters.size()]));
 		
 		
 		searchSourceBuilder.query(QueryBuilders.filteredQuery(null, filter));
-		searchSourceBuilder.size(10);
+		searchSourceBuilder.size(1);
 		
 		
 		SearchResult result = client.execute(searchSourceBuilder.toString());
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());
+			logger.info(hit.source.getRequirements().getLevel().toString());
+			logger.info(hit.source.getExplicitMods().toString());
 		}
 	}
 
