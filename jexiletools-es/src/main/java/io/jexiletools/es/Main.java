@@ -22,7 +22,7 @@ import java.util.List;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-import io.jexiletools.es.model.ExileToolsHit;
+import io.jexiletools.es.model.json.ExileToolsHit;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;

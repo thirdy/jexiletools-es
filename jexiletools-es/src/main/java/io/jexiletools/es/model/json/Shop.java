@@ -1,4 +1,11 @@
-package io.jexiletools.es.model;
+package io.jexiletools.es.model.json;
+
+import java.util.Optional;
+
+import org.elasticsearch.common.lang3.StringUtils;
+
+import io.jexiletools.es.model.Currencies;
+import io.jexiletools.es.model.Price;
 
 public class Shop {
 	  Long	added;
@@ -106,6 +113,15 @@ public class Shop {
 	}
 	public void setVerified(String verified) {
 		this.verified = verified;
+	}
+	public Optional<Price> getPrice() {
+		if (getAmount() != null 
+				&& getAmount() != 0
+				&& StringUtils.isNotBlank(getCurrency())) {
+			Currencies currencies = Currencies.fromDisplayName(getCurrency());
+			return Optional.of(new Price(currencies, getAmount()));
+		}
+		return Optional.empty();
 	}
 	
 	

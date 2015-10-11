@@ -31,7 +31,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.jexiletools.es.model.ExileToolsHit;
+import com.google.common.collect.ImmutableMap;
+
+import io.jexiletools.es.model.json.ExileToolsHit;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.SearchResult.Hit;
 
@@ -46,7 +48,7 @@ public class ExileToolsESClientTest {
 	static ExileToolsESClient client;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		client = new ExileToolsESClient();
+		client = new ExileToolsESClient("http://api.exiletools.com/index", "ed91748a4d2a4f597d69e2b05a058a0a");
 	}
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
@@ -58,28 +60,55 @@ public class ExileToolsESClientTest {
 	 */
 	@Test
 	public void testExecuteMjolnerUsingFilters() throws Exception {
-
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		List<FilterBuilder> filters = new LinkedList<>();
 		
-		filters.add(FilterBuilders.termFilter("attributes.league", "Hardcore"));
+		filters.add(FilterBuilders.termFilter("attributes.league", "Flashback Event (IC001)"));
 //		filters.add(FilterBuilders.termFilter("info.name", "Mjolner"));
-		filters.add(FilterBuilders.termFilter("info.name", "Hegemony's Era"));
+//		filters.add(FilterBuilders.termFilter("info.name", "Hegemony's Era"));
 		
 		FilterBuilder filter = FilterBuilders.andFilter(filters.toArray(new FilterBuilder[filters.size()]));
-		
-		
 		searchSourceBuilder.query(QueryBuilders.filteredQuery(null, filter));
-		searchSourceBuilder.size(1);
-		
-		
+		searchSourceBuilder.size(100);
 		SearchResult result = client.execute(searchSourceBuilder.toString());
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());
-			logger.info(hit.source.getRequirements().getLevel().toString());
-			logger.info(hit.source.getExplicitMods().toString());
+			hit.source.getQuality().ifPresent( q -> logger.info(q.toString()) );
+			hit.source.getPhysicalDPS().ifPresent( q -> logger.info(q.toString()) );
+//			logger.info(hit.source.toString());
+//			logger.info(hit.source.getRequirements().getLevel().toString());
+//			logger.info(hit.source.getExplicitMods().toString());
 		}
+	}
+	
+	@Test
+	public void testDistinctCurrencyIconValues() throws Exception {
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("info.icon")
+				.size(0));
+		SearchResult result = client.execute(searchSourceBuilder.toString());
+		logger.info(result.getJsonString());
+		System.out.println("-------");
+		result.getAggregations().getTermsAggregation("rarities").getBuckets().stream()
+			.map(e -> e.getKey())
+			.sorted()
+			.filter(k -> k.contains("Currency"))
+			.forEach(k -> System.out.println(k));
+	}
+	
+	@Test
+	public void testDistinctItemTypeValues() throws Exception {
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("attributes.itemType")
+				.size(0));
+		SearchResult result = client.execute(searchSourceBuilder.toString());
+		logger.info(result.getJsonString());
+		System.out.println("-------");
+		result.getAggregations().getTermsAggregation("rarities").getBuckets().stream()
+		.map(e -> e.getKey())
+		.sorted()
+		.forEach(k -> System.out.println(k));
 	}
 
 	@Test

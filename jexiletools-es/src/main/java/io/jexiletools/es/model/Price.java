@@ -17,45 +17,32 @@
  */
 package io.jexiletools.es.model;
 
-import java.util.Map;
-
 /**
  * @author thirdy
  *
  */
-public class Range {
-	private Double min;
-	private Double max;
+public class Price {
+	Currencies currency;
+	Double amount;
 	
-	public Range() {
+	public Price(Currencies currency, Double amount) {
 		super();
+		this.currency = currency;
+		this.amount = amount;
 	}
-	
-	
-	public Range(Map<String, Double> m) {
-		this.min = m.get("min");
-		this.max = m.get("max");
+	public Currencies getCurrency() {
+		return currency;
 	}
-
-	public Double getMin() {
-		return min;
-	}
-	public void setMin(Double min) {
-		this.min = min;
-	}
-	public Double getMax() {
-		return max;
-	}
-	public void setMax(Double max) {
-		this.max = max;
+	public Double getAmount() {
+		return amount;
 	}
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Range [min=");
-		builder.append(min);
-		builder.append(", max=");
-		builder.append(max);
+		builder.append("Price [currency=");
+		builder.append(currency);
+		builder.append(", amount=");
+		builder.append(amount);
 		builder.append("]");
 		return builder.toString();
 	}

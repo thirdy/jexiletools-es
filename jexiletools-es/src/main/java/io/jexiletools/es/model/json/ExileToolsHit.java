@@ -1,11 +1,18 @@
-package io.jexiletools.es.model;
+package io.jexiletools.es.model.json;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.elasticsearch.common.lang3.StringUtils;
+
+import io.jexiletools.es.model.BaseItemType;
+import io.jexiletools.es.model.Mod;
+import io.jexiletools.es.model.Price;
 
 public class ExileToolsHit {
 	public ExileToolsHit() { }
@@ -17,7 +24,7 @@ public class ExileToolsHit {
 	Attributes attributes;
 	Sockets sockets;
 	Requirements requirements;
-	Properties properties;
+	Map<String, Map<String, Object>> properties;
 	Map<String, Object> mods;
 	Map<String, Object> modsTotal;
 	
@@ -104,11 +111,11 @@ public class ExileToolsHit {
 		this.requirements = requirements;
 	}
 
-	public Properties getProperties() {
+	public Map<String, Map<String, Object>> getProperties() {
 		return properties;
 	}
 
-	public void setProperties(Properties properties) {
+	public void setProperties(Map<String, Map<String, Object>> properties) {
 		this.properties = properties;
 	}
 
@@ -130,7 +137,7 @@ public class ExileToolsHit {
 
 	@SuppressWarnings("unchecked")
 	public List<Mod> getExplicitMods() {
-		List<Mod> result = new ArrayList<>();
+		List<Mod> result = Collections.emptyList();
 		Map<String, Object> _mods = getMods();
 		if (_mods != null && !_mods.isEmpty()) {
 			Map<String, Object> itemTypeMods = (Map<String, Object>) _mods.get(getAttributes().getItemType());
@@ -164,4 +171,104 @@ public class ExileToolsHit {
 		}
 		return result;
 	}
+
+	public BaseItemType getBaseItemType() {
+		return BaseItemType.fromDisplayName(getAttributes().getBaseItemType());
+	}
+	
+	public Optional<Double> getArmour() {
+		return getDoubleFromProperties("Armour");
+	}
+	
+	public Optional<Double> getEnergyShield() {
+		return getDoubleFromProperties("Energy Shield");
+	}
+	
+	public Optional<Double> getEvasionRating() {
+		return getDoubleFromProperties("Evasion Rating");
+	}
+	
+	public Optional<Double> getChanceToBlock() {
+		return getDoubleFromProperties("Chance to Block");
+	}
+	
+	public Optional<Double> getAPS() {
+		return getDoubleFromProperties("Attacks per Second");
+	}
+	
+	public Optional<Double> getChaosDPS() {
+		return getDoubleFromProperties("Chaos DPS");
+	}
+	
+	public Optional<Range> getChaosDamage() {
+		return getRangeFromProperties("Chaos Damage");
+	}
+
+	public Optional<Double> getQuality() {
+		return getDoubleFromProperties("Quality");
+	}
+	
+	public Optional<Double> getCriticalStrikeChance() {
+		return getDoubleFromProperties("Critical Strike Chance");
+	}
+
+	public Optional<Double> getTotalDPS() {
+		return getDoubleFromProperties("Total DPS");
+	}
+	
+	public Optional<Double> getPhysicalDPS() {
+		return getDoubleFromProperties("Physical DPS");
+	}
+	
+	public Optional<Range> getPhysicalDamage() {
+		return getRangeFromProperties("Physical Damage");
+	}
+	
+	public Optional<Double> getElementalDPS() {
+		return getDoubleFromProperties("Elemental DPS");
+	}
+	
+	public Optional<Range> getElementalDamage() {
+		return getRangeFromProperties("Elemental Damage");
+	}
+	
+	private Optional<Double> getDoubleFromProperties(String key) {
+		Optional<Map<String, Map<String, Object>>> props = Optional.ofNullable(getProperties());
+		
+		Optional<Double> quality = props
+			.map(e -> e.get(getBaseItemType().displayName()))
+			.map(e -> {
+				return e.get(key);
+			})
+			.map(e -> (Double) e);
+		return quality;
+	}
+	
+	private Optional<Range> getRangeFromProperties(String key) {
+		Optional<Map<String, Map<String, Object>>> props = Optional.ofNullable(getProperties());
+		
+		@SuppressWarnings("unchecked")
+		Optional<Range> quality = props
+				.map(e -> e.get(getBaseItemType().displayName()))
+				.map(e -> (Map<String, Double>) e.get(key))
+				.map(e -> new Range(e));
+		return quality;
+	}
+
+	public String toWTB() {
+		Optional<String> sellerIGN = Optional.ofNullable(StringUtils.trimToNull(getShop().getSellerIGN()));
+		Optional<Price> price = getShop().getPrice();
+		DecimalFormat df = new DecimalFormat("#.##");
+		String priceStr = price.isPresent() ?
+				String.format(" listed for %s %s", df.format(price.get().getAmount()), price.get().getCurrency().displayName())
+				: "" ;
+		
+		return sellerIGN.map(ign -> 
+			String.format("@%s Hi, I would like to buy your %s%s in %s",
+					ign, getInfo().getFullName(), priceStr, getAttributes().getLeague()))
+				.orElse(
+						"https://www.pathofexile.com/forum/view-thread/" + getShop().getThreadid() 
+				);
+	}
+
 }

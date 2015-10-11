@@ -1,4 +1,4 @@
-package io.jexiletools.es.model;
+package io.jexiletools.es.model.json;
 
 import java.util.List;
 

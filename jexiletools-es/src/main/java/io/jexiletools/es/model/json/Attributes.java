@@ -1,4 +1,6 @@
-package io.jexiletools.es.model;
+package io.jexiletools.es.model.json;
+
+import io.jexiletools.es.model.Rarity;
 
 public class Attributes {
 	String baseItemType;
@@ -136,6 +138,9 @@ public class Attributes {
 	}
 	public void setSupport(Boolean support) {
 		this.support = support;
+	}
+	public Rarity getRarityAsEnum() {
+		return Rarity.fromDisplayName(getRarity());
 	}
 	
 	
