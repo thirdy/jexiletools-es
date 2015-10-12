@@ -70,7 +70,7 @@ public class ExileToolsESClientTest {
 		FilterBuilder filter = FilterBuilders.andFilter(filters.toArray(new FilterBuilder[filters.size()]));
 		searchSourceBuilder.query(QueryBuilders.filteredQuery(null, filter));
 		searchSourceBuilder.size(100);
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());
@@ -87,7 +87,7 @@ public class ExileToolsESClientTest {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("info.icon")
 				.size(0));
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		logger.info(result.getJsonString());
 		System.out.println("-------");
 		result.getAggregations().getTermsAggregation("rarities").getBuckets().stream()
@@ -100,9 +100,9 @@ public class ExileToolsESClientTest {
 	@Test
 	public void testDistinctItemTypeValues() throws Exception {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("attributes.itemType")
+		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("attributes.equipType")
 				.size(0));
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		logger.info(result.getJsonString());
 		System.out.println("-------");
 		result.getAggregations().getTermsAggregation("rarities").getBuckets().stream()
@@ -117,7 +117,7 @@ public class ExileToolsESClientTest {
 		 searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Mjolner"));
 		 searchSourceBuilder.size(1);
 		
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());
@@ -130,7 +130,7 @@ public class ExileToolsESClientTest {
 		searchSourceBuilder.query(QueryBuilders.matchQuery("info.name", "Tabula Rasa"));
 		searchSourceBuilder.size(1);
 		
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());
@@ -145,7 +145,7 @@ public class ExileToolsESClientTest {
 				.mustNot(QueryBuilders.matchQuery("attributes.league", "Flashback Event (IC001)")));
 		searchSourceBuilder.size(1);
 		
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());
@@ -160,7 +160,7 @@ public class ExileToolsESClientTest {
 				.field("attributes.league"));
 //		searchSourceBuilder.size(0);
 		
-		SearchResult result = client.execute(searchSourceBuilder.toString());
+		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
 			logger.info(hit.source.toString());

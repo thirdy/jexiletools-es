@@ -19,12 +19,15 @@ package io.jexiletools.es;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.jexiletools.es.ExileToolsSearchAction.Builder;
+import io.jexiletools.es.model.json.ExileToolsHit;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
@@ -54,7 +57,7 @@ public class ExileToolsESClient {
 		logger.debug("~~~~~~~~~~~~~~~~~~ Successfully started ExileToolsESClient ~~~~~~~~~~~~~~~~~~~~");
 	}
 	
-	public SearchResult execute(String json) throws IOException {
+	public ExileToolsSearchResult execute(String json) throws IOException {
 		 logger.debug("~~~~ Executing search: {}{}", System.lineSeparator(), json);
 
 		 Builder builder = new ExileToolsSearchAction.Builder(json)
@@ -63,7 +66,25 @@ public class ExileToolsESClient {
 		 
 		 SearchResult result = client.execute(search);
 //		 logger.debug(result.getJsonString());
-		return result;
+		return new ExileToolsSearchResult(result);
+	}
+	
+	public static class ExileToolsSearchResult {
+		private List<ExileToolsHit> exileToolHits;
+		private SearchResult searchResult;
+		public ExileToolsSearchResult(SearchResult searchResult) {
+			this.searchResult = searchResult;
+			exileToolHits = searchResult.getHits(ExileToolsHit.class)
+					.stream()
+					.map(e -> e.source)
+					.collect(Collectors.toList());
+		}
+		public List<ExileToolsHit> getExileToolHits() {
+			return exileToolHits;
+		}
+		public SearchResult getSearchResult() {
+			return searchResult;
+		}
 	}
 	
 	public void shutdown() {
