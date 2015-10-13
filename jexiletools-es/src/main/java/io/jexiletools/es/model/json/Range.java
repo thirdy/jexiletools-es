@@ -31,7 +31,11 @@ public class Range {
 		super();
 	}
 	
-	
+	public Range(Double min, Double max) {
+		this.min = min;
+		this.max = max;
+	}
+
 	public Range(Map<String, Double> m) {
 		this.min = m.get("min");
 		this.max = m.get("max");

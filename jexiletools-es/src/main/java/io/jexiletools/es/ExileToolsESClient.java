@@ -47,6 +47,10 @@ public class ExileToolsESClient {
 	public ExileToolsESClient() {
 		this("http://api.exiletools.com/index", "DEVELOPMENT-Indexer");
 	}
+	
+	public ExileToolsESClient(String apiKey) {
+		this("http://api.exiletools.com/index", apiKey);
+	}
 
 	public ExileToolsESClient(String url, String apiKey) {
 		this.apiKey = apiKey;

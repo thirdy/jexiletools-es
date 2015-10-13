@@ -31,8 +31,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
-
 import io.jexiletools.es.model.json.ExileToolsHit;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.SearchResult.Hit;
@@ -43,12 +41,14 @@ import io.searchbox.core.SearchResult.Hit;
  */
 public class ExileToolsESClientTest {
 	
+	private static final String BLACK_MARKET_API_KEY = "4b1ccf2fce44441365118e9cd7023c38";
+
 	private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
 	static ExileToolsESClient client;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		client = new ExileToolsESClient("http://api.exiletools.com/index", "ed91748a4d2a4f597d69e2b05a058a0a");
+		client = new ExileToolsESClient("http://api.exiletools.com/index", BLACK_MARKET_API_KEY);
 	}
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
@@ -65,7 +65,8 @@ public class ExileToolsESClientTest {
 		
 		filters.add(FilterBuilders.termFilter("attributes.league", "Flashback Event (IC001)"));
 //		filters.add(FilterBuilders.termFilter("info.name", "Mjolner"));
-//		filters.add(FilterBuilders.termFilter("info.name", "Hegemony's Era"));
+		filters.add(FilterBuilders.termFilter("info.name", "Hegemony's Era"));
+		filters.add(FilterBuilders.rangeFilter("properties.Weapon.Physical DPS").from(400));
 		
 		FilterBuilder filter = FilterBuilders.andFilter(filters.toArray(new FilterBuilder[filters.size()]));
 		searchSourceBuilder.query(QueryBuilders.filteredQuery(null, filter));
@@ -73,8 +74,8 @@ public class ExileToolsESClientTest {
 		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		List<Hit<ExileToolsHit, Void>> hits = result.getHits(ExileToolsHit.class);
 		for (Hit<ExileToolsHit, Void> hit : hits) {
-			logger.info(hit.source.toString());
-			hit.source.getQuality().ifPresent( q -> logger.info(q.toString()) );
+//			logger.info(hit.source.toString());
+//			hit.source.getQuality().ifPresent( q -> logger.info(q.toString()) );
 			hit.source.getPhysicalDPS().ifPresent( q -> logger.info(q.toString()) );
 //			logger.info(hit.source.toString());
 //			logger.info(hit.source.getRequirements().getLevel().toString());
@@ -100,7 +101,7 @@ public class ExileToolsESClientTest {
 	@Test
 	public void testDistinctItemTypeValues() throws Exception {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("attributes.equipType")
+		searchSourceBuilder.aggregation(AggregationBuilders.terms("rarities").field("shop.currency")
 				.size(0));
 		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();
 		logger.info(result.getJsonString());
@@ -142,7 +143,8 @@ public class ExileToolsESClientTest {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(QueryBuilders.boolQuery()
 				.must(QueryBuilders.matchQuery("attributes.league", "Flashback Event (IC001)"))
-				.mustNot(QueryBuilders.matchQuery("attributes.league", "Flashback Event (IC001)")));
+				.mustNot(QueryBuilders.matchQuery("attributes.league", "Flashback Event (IC001)")
+						));
 		searchSourceBuilder.size(1);
 		
 		SearchResult result = client.execute(searchSourceBuilder.toString()).getSearchResult();

@@ -27,6 +27,7 @@ public class ExileToolsHit {
 	Map<String, Map<String, Object>> properties;
 	Map<String, Object> mods;
 	Map<String, Object> modsTotal;
+	Map<String, String> modsPseudo;
 	
 	@Override
 	public String toString() {
@@ -134,23 +135,42 @@ public class ExileToolsHit {
 	public void setModsTotal(Map<String, Object> modsTotal) {
 		this.modsTotal = modsTotal;
 	}
+	
+	public Map<String, String> getModsPseudo() {
+		return modsPseudo;
+	}
+
+	public void setModsPseudo(Map<String, String> modsPseudo) {
+		this.modsPseudo = modsPseudo;
+	}
 
 	@SuppressWarnings("unchecked")
-	public List<Mod> getExplicitMods() {
-		List<Mod> result = Collections.emptyList();
+	public List<Mod> getExplicitOrCraftedMods() {
+		List<Mod> result = new ArrayList<>();
 		Map<String, Object> _mods = getMods();
 		if (_mods != null && !_mods.isEmpty()) {
 			Map<String, Object> itemTypeMods = (Map<String, Object>) _mods.get(getAttributes().getItemType());
 			Map<String, Object> explicitMods = (Map<String, Object>) itemTypeMods.get("explicit");
 			if (explicitMods != null) {
-				result = explicitMods
+				result.addAll(
+						explicitMods
 						.entrySet()
 						.stream()
 						.map(e -> Mod.fromRaw(e.getKey(), e.getValue()))
-						.collect(Collectors.toList());
+						.collect(Collectors.toList())
+						);
+			}
+			Map<String, Object> craftedMods = (Map<String, Object>) itemTypeMods.get("crafted");
+			if (craftedMods != null) {
+				result.addAll(
+						craftedMods
+						.entrySet()
+						.stream()
+						.map(e -> Mod.fromRaw(e.getKey(), e.getValue(), true))
+						.collect(Collectors.toList())
+						);
 			}
 		}
-		
 		return result;
 	}
 	
@@ -230,6 +250,62 @@ public class ExileToolsHit {
 	
 	public Optional<Range> getElementalDamage() {
 		return getRangeFromProperties("Elemental Damage");
+	}
+	
+	public Optional<Integer> getRLvl() {
+		return Optional.ofNullable(getRequirements()).map(r -> r.getLevel());
+	}
+	
+	public Optional<Integer> getRStr() {
+		return Optional.ofNullable(getRequirements()).map(r -> r.getStrength());
+	}
+	
+	public Optional<Integer> getRDex() {
+		return Optional.ofNullable(getRequirements()).map(r -> r.getDexterity());
+	}
+	
+	public Optional<Integer> getRInt() {
+		return Optional.ofNullable(getRequirements()).map(r -> r.getIntelligence());
+	}
+	
+	public Optional<Integer> getPseudoChaos() {              
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("eleResistSumChaos")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoCold() {               
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("eleResistSumCold")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoFire() {               
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("eleResistSumFire")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoLightning() {          
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("eleResistSumLightning")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoEleRes() {             
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("eleResistTotal")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoAttr() {               
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("flatAttributesTotal")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoDex() {                
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("flatSumDex")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoInt() {                
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("flatSumInt")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoStr() {                
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("flatSumStr")).map(s -> Integer.valueOf(s));
+	}                                                        
+	                                                         
+	public Optional<Integer> getPseudoLife() {               
+		return Optional.ofNullable(getModsPseudo()).map(m -> m.get("maxLife")).map(s -> Integer.valueOf(s));
 	}
 	
 	private Optional<Double> getDoubleFromProperties(String key) {

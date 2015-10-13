@@ -25,6 +25,7 @@ import java.util.Arrays;
  */
 public enum Rarity {
 
+	blank("", ""),
 	Unique("Unique", "#af6025"),
 	Rare("Rare", "#ffff77"),
 	Magic("Magic", "#8888ff"),
@@ -32,7 +33,8 @@ public enum Rarity {
 	Unknown("Unknown", "#000000"),
 	Gem("Gem", "#1ba29b"),
 	Currency("Currency", "#aa9e82"),
-	Quest_Item("Quest Item", "#4ae63a");
+	Quest_Item("Quest Item", "#4ae63a") 
+	;
 
 	private String displayName;
 	private String webColor;

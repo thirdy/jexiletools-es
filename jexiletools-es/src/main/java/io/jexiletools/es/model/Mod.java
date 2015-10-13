@@ -34,6 +34,8 @@ public class Mod {
 	boolean isValueRanged; // true for mods like Adds #-# Lightning Damage to Attacks
 	boolean isValueBoolean;
 	
+	boolean isCrafted;
+	
 	Double value;
 	Range range;
 	
@@ -54,7 +56,11 @@ public class Mod {
 	}
 	
 	public static Mod fromRaw(String name, Object value) {
+		return fromRaw(name, value, false);
+	}
+	public static Mod fromRaw(String name, Object value, boolean isCrafted) {
 		Mod mod = new Mod();
+		mod.setCrafted(isCrafted);
 		mod.setName(name);
 		if (Double.class.isInstance(value)) {
 			mod.setValue((Double)value);
@@ -68,6 +74,14 @@ public class Mod {
 			mod.setRange(r);
 		}
 		return mod;
+	}
+
+	public boolean isCrafted() {
+		return isCrafted;
+	}
+
+	public void setCrafted(boolean isCrafted) {
+		this.isCrafted = isCrafted;
 	}
 
 	public String getName() {
